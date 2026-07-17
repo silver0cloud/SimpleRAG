@@ -9,7 +9,7 @@ If you've heard the term "RAG" thrown around and want to build one with your own
         │
         ▼
  ┌─────────────┐   ┌───────────────┐   ┌───────────────┐   ┌──────────────┐
- │  1. FETCH   │──▶|  2. RETRIEVE  │──▶│  3. AUGMENT  │──▶│  4. GENERATE│
+ │  1. FETCH   │──>|  2. RETRIEVE  │──>│  3. AUGMENT   │──>│  4. GENERATE │
  │  NewsAPI    │   │  TF-IDF +     │   │  Build a      │   │  Gemini      │
  │  → articles │   │  cosine sim.  │   │  cited prompt │   │  streams the │
  │             │   │  → top 6 docs │   │               │   │  answer      │
