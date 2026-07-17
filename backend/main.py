@@ -15,7 +15,7 @@ No vector database, no embedding model, no LangChain — JUST Python's stdlib `m
 and that's on purpose: TF-IDF + cosine similarity is THE CLASSIC retrieval (the same core idea search engines used for decades).
 Once this clicks, swapping it for a proper embedding model + vector DB (see the README's "Extending" section) is just
 a better retriever, not a different concept! EVERY line of this code is interesting.
-───────────────────────────────────────────────────────────────────────────────────────────────────────────
+──────────────────────────────────────────────────────────────────────────────────────────────────────────
 """
 import os
 from fastapi import FastAPI, HTTPException
