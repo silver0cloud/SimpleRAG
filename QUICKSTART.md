@@ -1,6 +1,6 @@
 # News RAG — Quickstart
 
-Get the app running in **one command** (no Docker needed).
+Get the app running in **one command** — no Docker needed for this path.
 
 ---
 
@@ -15,6 +15,8 @@ Get the app running in **one command** (no Docker needed).
 You'll also need:
 - A **NewsAPI key** → [newsapi.org/register](https://newsapi.org/register) (free)
 - A **Gemini API key** → [aistudio.google.com/app/apikey](https://aistudio.google.com/app/apikey) (free)
+
+You can either paste these into the app's sidebar each run, or save them once in `backend/.env` (copy `backend/.env.example` → `backend/.env` and fill them in) so you never have to retype them.
 
 ---
 
@@ -65,13 +67,14 @@ Then open `http://localhost:5173`.
 
 ---
 
-## Docker (production)
+## Docker (closer to production)
 
 ```bash
+cp backend/.env.example backend/.env   # required — even if you leave it blank
 docker compose up --build
 ```
 
-App runs on `http://localhost` (port 80). See `README.md` for details.
+App runs on `http://localhost` (port 80). See `README.md` → "Running it — localhost and Docker" for what each container does.
 
 ---
 
@@ -82,6 +85,8 @@ App runs on `http://localhost` (port 80). See `README.md` for details.
 | `python: command not found` | Try `python3` — update `start.sh` line 5 accordingly |
 | Port 8000 already in use | Kill the process: `lsof -ti:8000 \| xargs kill` |
 | Port 5173 already in use | Kill the process: `lsof -ti:5173 \| xargs kill` |
-| NewsAPI 426 error | Your free plan only supports last 30 days — already handled |
-| Gemini 429 quota error | Switch model to `gemini-2.0-flash-lite` in `backend/main.py` or wait 24h |
-| npm peer dependency error | Run `npm install` inside `frontend/` after setting Vite to `^7.0.0` in `package.json` |
+| NewsAPI 426 error | Your free plan only supports the last month of articles — already handled by the 14/28-day windows in `main.py` |
+| Gemini 429 quota error | Switch the model name in `backend/main.py`'s `/ask` route, or wait 24h |
+| "No NewsAPI/Gemini key provided" | Paste a key in the sidebar, or set it in `backend/.env` and restart the backend |
+| `docker compose up` fails immediately citing `backend/.env` | Run `cp backend/.env.example backend/.env` first — the file must exist, even empty |
+| npm peer dependency error | Delete `frontend/node_modules` and re-run `npm install` |
