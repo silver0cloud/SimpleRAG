@@ -62,7 +62,7 @@ fi
 
 echo ""
 echo "╔══════════════════════════════════════════════════╗"
-echo "║  ✓ News RAG is running!                         ║"
+echo "║  ✓ News RAG is running!                          ║"
 echo "║                                                  ║"
 echo "║  Frontend  →  http://localhost:5173              ║"
 echo "║  Backend   →  http://localhost:8000              ║"
