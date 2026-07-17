@@ -1,0 +1,78 @@
+/* ───────────────────────────────────────────────────────────────────────
+   index.css — design tokens + global styles.
+
+   Theme: "newsroom terminal". The whole app is themed like a wire-service
+   dashboard: an ink-navy background, amber for anything "live" (fetching,
+   streaming), and monospace type for data/citations — because in a RAG
+   app, citations ARE the product. Every answer should feel traceable back
+   to a source, like a journalist's footnote.
+   ─────────────────────────────────────────────────────────────────────── */
+
+:root {
+  /* ── Color tokens ── */
+  --ink: #14171c;         /* app background */
+  --ink-raised: #1b1f27;  /* panels/cards */
+  --ink-line: #2a2f3a;    /* borders/dividers */
+  --paper: #e8e6de;       /* primary text, "paper white" */
+  --paper-dim: #9aa0ac;   /* secondary text */
+  --signal: #e8a33d;      /* amber — live/active/focus */
+  --wire: #c1443c;        /* red — citations, alerts, "breaking" */
+  --teal: #4c8577;        /* muted teal — recent/success accents */
+
+  /* ── Type tokens ── */
+  --font-display: "Inter", system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, monospace;
+
+  /* ── Layout tokens ── */
+  --radius: 3px;         /* near-zero radius: broadsheet, not app-store */
+  --gap: 1.25rem;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  background: var(--ink);
+  color: var(--paper);
+  font-family: var(--font-display);
+  -webkit-font-smoothing: antialiased;
+}
+
+#root {
+  min-height: 100vh;
+}
+
+a {
+  color: var(--signal);
+}
+
+button {
+  font-family: inherit;
+}
+
+/* Respect reduced-motion preferences */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+
+/* Visible keyboard focus everywhere — accessibility floor */
+:focus-visible {
+  outline: 2px solid var(--signal);
+  outline-offset: 2px;
+}
+
+/* ── Shared scrollbar styling (webkit) ── */
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--ink-line);
+  border-radius: var(--radius);
+}
