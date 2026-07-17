@@ -1,15 +1,14 @@
 """
-main.py — the entire RAG backend in one file.
+main.py — the ENTIRE RAG backend in just one file.
 
-This is deliberately NOT split into services/routers/repositories the way a
-production app would be. For a first RAG project, the value is in seeing
-every stage of the pipeline on one screen:
+This is deliberately NOT split into services/routers/repositories the way a production app would be. 
+For our first RAG project, see and understand every stage of the pipeline on one screen, the stages are:
 
-    FETCH   /fetch-news   → pull raw articles from NewsAPI            (build the corpus)
-    INDEX   retrieve()    → TF-IDF vectorise the corpus + the question (retrieval math)
-    RETRIEVE retrieve()   → rank by cosine similarity, keep top-k      (retrieval)
-    AUGMENT  /ask         → stitch top-k articles into the prompt      (augmentation)
-    GENERATE /ask         → stream Gemini's answer back over SSE       (generation)
+    FETCH     /fetch-news   → pull raw articles from NewsAPI             (build the corpus)
+    INDEX     retrieve()    → TF-IDF vectorise the corpus + the question (retrieval math)
+    RETRIEVE  retrieve()    → rank by cosine similarity, keep top-k      (retrieval)
+    AUGMENT   /ask          → stitch top-k articles into the prompt      (augmentation)
+    GENERATE  /ask          → stream Gemini's answer back over SSE       (generation)
 
 No vector database, no embedding model, no LangChain — just Python's stdlib
 `math` and `re`. That's on purpose: TF-IDF + cosine similarity is "real"
