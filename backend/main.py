@@ -1,4 +1,5 @@
 """
+──────────────────────────────────────────────────────────────────────────────────────────────────────────
 main.py — the ENTIRE RAG backend in just one file.
 
 This is deliberately NOT split into services/routers/repositories the way a production app would be. 
@@ -10,12 +11,11 @@ For our first RAG project, see and understand every stage of the pipeline on one
     AUGMENT   /ask          → stitch top-k articles into the prompt      (augmentation)
     GENERATE  /ask          → stream Gemini's answer back over SSE       (generation)
 
-No vector database, no embedding model, no LangChain — just Python's stdlib
-`math` and `re`. That's on purpose: TF-IDF + cosine similarity is "real"
-retrieval (the same core idea search engines used for decades), and you can
-read every line of it below. Once this clicks, swapping it for a proper
-embedding model + vector DB (see the README's "Extending" section) is just
-a better retriever, not a different concept.
+No vector database, no embedding model, no LangChain — JUST Python's stdlib `math` and `re`! 
+and that's on purpose: TF-IDF + cosine similarity is THE CLASSIC retrieval (the same core idea search engines used for decades).
+Once this clicks, swapping it for a proper embedding model + vector DB (see the README's "Extending" section) is just
+a better retriever, not a different concept! EVERY line of this code is interesting.
+───────────────────────────────────────────────────────────────────────────────────────────────────────────
 """
 import os
 from fastapi import FastAPI, HTTPException
@@ -31,10 +31,13 @@ import re
 import json
 import asyncio
 from datetime import datetime, timedelta
-
-# Loads backend/.env if present. Copy backend/.env.example → backend/.env
-# and fill in keys there if you don't want to paste them into the UI every
-# time — see the fallback logic in the route handlers below.
+"""
+ PREFERRED METHOD - 
+ Before running the backend terminal 1
+ Fill in the Gemini API key and News API key in the ".env.example" file
+ if you don't want to paste them into the UI everytime. 
+ 
+"""
 load_dotenv()
 
 app = FastAPI(title="News RAG API")
@@ -43,6 +46,7 @@ app = FastAPI(title="News RAG API")
 # to be an allowed CORS origin. In Docker/production, nginx proxies /api/*
 # to this service instead, so the browser never calls it cross-origin at
 # all — but we keep this permissive for local development.
+
 ALLOWED_ORIGINS = os.getenv(
     "CORS_ORIGINS", "http://localhost:5173,http://localhost:3000"
 ).split(",")
@@ -61,6 +65,7 @@ NEWSAPI_BASE = "https://newsapi.org/v2/everything"
 # their OWN copy locally doesn't want to paste keys into the browser every
 # time, they can set these once here instead. Requests can still override
 # them per-call — handy if you want to demo with someone else's key.
+
 ENV_NEWS_API_KEY = os.getenv("NEWS_API_KEY")
 ENV_GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
 
@@ -79,26 +84,27 @@ class AskRequest(BaseModel):
     articles: list[dict]
     gemini_api_key: Optional[str] = None  # falls back to GEMINI_API_KEY env var
 
+"""
+─── TF-IDF helpers ───────────────────────────────────────────────────────────────
 
-# ── TF-IDF helpers ───────────────────────────────────────────────────────────────
-#
-# TF-IDF ("Term Frequency – Inverse Document Frequency") turns each document
-# into a vector of numbers, one per vocabulary word, so we can measure how
-# "similar" two pieces of text are with simple geometry (cosine similarity)
-# instead of an LLM call. It's cheap, fast, needs no external service, and
-# is a genuinely good first retriever to learn on:
-#
-#   1. tokenise()    — text  → list of lowercase, stopword-free words
-#   2. build_vocab()  — corpus → the ~400 most informative words to track
-#   3. tfidf_vector()  — text  → a vector of "how much does this word matter
-#                        here, relative to the article's own length"
-#   4. cosine_sim()    — two vectors → a 0..1 similarity score
-#   5. retrieve()      — question + articles → top-k most relevant articles
-#
-# This is a simplified TF-IDF (no true IDF weighting — see build_vocab's
-# docstring), which keeps the math easy to read while still producing
-# decent rankings for short news snippets.
+ TF-IDF ("Term Frequency – Inverse Document Frequency") turns each document
+ into a vector of numbers, one per vocabulary word, so we can measure how
+ "similar" two pieces of text are with simple geometry (cosine similarity)
+ instead of an LLM call. It's cheap, fast, needs no external service, and
+ is a genuinely good first retriever to learn on:
 
+   1. tokenise()      — text  → list of lowercase, stopword-free words
+   2. build_vocab()   — corpus → the ~400 most informative words to track
+   3. tfidf_vector()  — text  → a vector of "how much does this word matter
+                        here, relative to the article's own length"
+   4. cosine_sim()    — two vectors → a 0..1 similarity score
+   5. retrieve()      — question + articles → top-k most relevant articles
+
+ This is a simplified TF-IDF (no true IDF weighting — see build_vocab's
+ docstring), which keeps the math easy to read while still producing
+ decent rankings for short news snippets.
+ ────────────────────────────────────────────────────────────────────────────────
+"""
 STOPWORDS = {
     "the","a","an","and","or","but","in","on","at","to","for","of","with",
     "by","from","is","was","are","were","be","been","as","that","this","it",
@@ -112,19 +118,22 @@ STOPWORDS = {
 
 
 def tokenise(text: str) -> list[str]:
-    """Lowercase, strip punctuation, and drop short/stopword tokens.
+    """
+    Lowercase, strip punctuation, and drop short/stopword tokens.
 
     'The AI market grew fast!' → ['market', 'grew', 'fast']
     (word length > 2 filters noise like 'ai' — a real limitation worth
     knowing: this also throws away genuinely short but meaningful tokens.
     A production tokenizer would be smarter here.)
+    
     """
     return [w for w in re.sub(r"[^a-z0-9\s]", " ", text.lower()).split()
             if len(w) > 2 and w not in STOPWORDS]
 
 
 def build_vocab(texts: list[str], max_terms: int = 400) -> list[str]:
-    """Pick the vocabulary — the fixed set of words every article/question
+    """
+    Pick the vocabulary — the fixed set of words every article/question
     gets vectorised against.
 
     We count document frequency (df): in how many articles does each word
@@ -134,7 +143,9 @@ def build_vocab(texts: list[str], max_terms: int = 400) -> list[str]:
     a rare, distinctive word is often exactly what makes retrieval work.
     This is the "IDF" (inverse document frequency) intuition, applied as a
     filter rather than a smooth weight — simpler to read, same effect.
+    
     """
+    
     df: dict[str, int] = {}
     for t in texts:
         for w in set(tokenise(t)):
@@ -145,11 +156,13 @@ def build_vocab(texts: list[str], max_terms: int = 400) -> list[str]:
 
 
 def tfidf_vector(text: str, vocab: list[str]) -> list[float]:
-    """Turn one piece of text into a fixed-length vector aligned to `vocab`.
+    """
+    Turns one piece of text into a fixed-length vector aligned to `vocab`.
 
     Each position holds that word's frequency within THIS text (term
     frequency), so two texts become directly comparable numeric vectors —
     the same shape regardless of how long the original text was.
+    
     """
     words = tokenise(text)
     if not words:
@@ -161,10 +174,12 @@ def tfidf_vector(text: str, vocab: list[str]) -> list[float]:
 
 
 def cosine_sim(a: list[float], b: list[float]) -> float:
-    """Angle-based similarity between two vectors, 0 (unrelated) to 1
+    """
+    Angle-based similarity between two vectors, 0 (unrelated) to 1
     (identical direction). This is the same metric real vector databases
     use on embeddings — we're just applying it to TF-IDF vectors instead
     of a neural embedding.
+    
     """
     dot = sum(x * y for x, y in zip(a, b))
     na = math.sqrt(sum(x * x for x in a))
@@ -173,13 +188,15 @@ def cosine_sim(a: list[float], b: list[float]) -> float:
 
 
 def retrieve(question: str, articles: list[dict], k: int = 6) -> list[dict]:
-    """The 'R' in RAG: given a question and the full corpus, return the
+    """
+    The 'R' in RAG: given a question and the full corpus, return the
     k most relevant articles.
 
     Note the vocabulary is rebuilt fresh from THIS corpus on every call —
     there's no persistent index. That's fine at a few dozen articles; at
     real scale you'd build the index once (offline) and query it many
     times, which is exactly what a vector database gives you.
+    
     """
     texts = [a.get("_text", "") for a in articles]
     vocab = build_vocab(texts)
@@ -201,14 +218,18 @@ def health():
 
 @app.post("/fetch-news")
 async def fetch_news(req: FetchRequest):
-    """Stage 1 — build the retrieval corpus.
+    """
+    ────────────────────────────────────────────────────────────────────
+    Stage 1 — build the retrieval corpus.
 
     Fires two NewsAPI requests in parallel: one for the last 14 days
     ("recent"), one for 15–28 days ago ("old"). Tagging each article with
     an `era` lets the frontend (and the LLM prompt in /ask) reason about
     *when* something was reported, not just what — handy for questions
     like "what's changed recently?".
+    ────────────────────────────────────────────────────────────────────
     """
+    
     news_api_key = req.news_api_key or ENV_NEWS_API_KEY
     if not news_api_key:
         raise HTTPException(
@@ -273,7 +294,9 @@ async def fetch_news(req: FetchRequest):
 
 @app.post("/ask")
 async def ask(req: AskRequest):
-    """Stages 2–4 — retrieve, augment, and generate.
+    """
+    ─────────────────────────────────────────────────────────────────────────
+    Stages 2–4 — retrieve, augment, and generate.
 
     1. RETRIEVE: rank the supplied articles against the question (TF-IDF).
     2. AUGMENT:  stitch the top-k articles into a numbered context block
@@ -281,6 +304,7 @@ async def ask(req: AskRequest):
     3. GENERATE: stream Gemini's answer back to the client token-by-token
                  as Server-Sent Events, ending with a `sources` payload so
                  the frontend can render clickable [1] [2] citations.
+    ──────────────────────────────────────────────────────────────────────────            
     """
     if not req.articles:
         raise HTTPException(400, detail="No articles provided. Fetch news first.")
