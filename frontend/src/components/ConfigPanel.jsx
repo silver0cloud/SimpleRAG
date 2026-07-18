@@ -1,13 +1,9 @@
-// ─────────────────────────────────────────────────────────────────────────
-// ConfigPanel.jsx — the sidebar: where a user supplies their own API keys
-// and picks a topic to build a retrieval corpus around.
-//
-// Why keys are typed in the browser at all: this is a "bring your own key"
-// learning app, so each visitor uses their own free-tier NewsAPI/Gemini
-// quota instead of sharing yours. In a real product you'd instead store
-// keys server-side (see backend/.env.example) and never expose them to
-// the client.
-// ─────────────────────────────────────────────────────────────────────────
+// ————— ConfigPanel.jsx —————————————————————————————————————————————————————————
+// The sidebar: where a user supplies their own API keys and picks a topic to build a retrieval corpus around.
+// Why keys are typed in the browser at all: this is a "bring your own key" learning app. 
+// So each visitor uses their own free-tier NewsAPI/Gemini quota instead of sharing yours. 
+// In a real product you'd instead store keys server-side (see backend/.env.example) and never expose them to the client.
+// ───────────────────────────────────────────────────────────────────────────────
 export default function ConfigPanel({
   newsApiKey,
   setNewsApiKey,
@@ -22,10 +18,10 @@ export default function ConfigPanel({
     <aside className="config-panel">
       <div className="brand">
         <span className="brand-dot" aria-hidden="true" />
-        <span className="brand-name">NEWS·RAG</span>
+        <span className="brand-name">News·RAG</span>
       </div>
       <p className="brand-tagline">
-        A minimal Retrieve → Augment → Generate pipeline over live news.
+        A lightweight minimal Retrieve → Augment → Generate pipeline over live news.
       </p>
 
       <div className="field">
@@ -79,8 +75,8 @@ export default function ConfigPanel({
       </button>
 
       <p className="hint">
-        Keys stay in your browser's local storage only — they're sent
-        straight to NewsAPI/Gemini via our backend, never logged anywhere.
+        Keys stay in your browser's local storage only — 
+        they're sent straight to NewsAPI/Gemini via our backend, never logged anywhere.
       </p>
     </aside>
   );
