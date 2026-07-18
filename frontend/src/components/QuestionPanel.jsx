@@ -1,11 +1,10 @@
-// ─────────────────────────────────────────────────────────────────────────
-// QuestionPanel.jsx — where the user asks a question over the corpus.
+// ────── QuestionPanel.jsx ────────────────────────────────────────────────────────
+// It is where the user asks a question over the corpus.
 //
 // Submitting here triggers the actual "R" and "A" of RAG on the backend:
 // Retrieve the top-k most relevant articles (TF-IDF + cosine similarity)
-// and Augment a prompt with them. Generation happens in AnswerPanel, which
-// renders the streamed response.
-// ─────────────────────────────────────────────────────────────────────────
+// and Augment a prompt with them. Generation happens in AnswerPanel, which renders the streamed response.
+// ─────────────────────────────────────────────────────────────────────────────────
 const EXAMPLES = [
   "What's changed in the last two weeks?",
   "Summarize the overall sentiment",
