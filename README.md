@@ -4,18 +4,6 @@ A small, fully working RAG pipeline: it pulls real, live news articles, indexes 
 
 If you've heard the term "RAG" thrown around and want to build one with your own hands before reaching for heavier tools, this is the project.
 
-```
-"What's changed in AI regulation in the last two weeks?"
-        │
-        ▼
- ┌─────────────┐   ┌───────────────┐   ┌───────────────┐   ┌──────────────┐
- │  1. FETCH   │──>|  2. RETRIEVE  │──>│  3. AUGMENT   │──>│  4. GENERATE │
- │  NewsAPI    │   │  TF-IDF +     │   │  Build a      │   │  Gemini      │
- │  → articles │   │  cosine sim.  │   │  cited prompt │   │  streams the │
- │             │   │  → top 6 docs │   │               │   │  answer      │
- └─────────────┘   └───────────────┘   └───────────────┘   └──────────────┘
-```
-
 ---
 
 ## Table of contents
@@ -44,6 +32,18 @@ RAG fixes this by giving the model an "open book" for the specific question you'
 | Can cite sources? | No — it's guessing from memory | Yes — every claim can point to a document |
 | Can you fix wrong answers? | Retrain the whole model (expensive) | Fix your data/retrieval (cheap) |
 | Hallucination risk | Higher on niche/recent topics | Lower — answer is grounded in real text |
+
+```
+"What's changed in AI regulation in the last two weeks?"
+        │
+        ▼
+ ┌─────────────┐   ┌───────────────┐   ┌───────────────┐   ┌──────────────┐
+ │  1. FETCH   │──>|  2. RETRIEVE  │──>│  3. AUGMENT   │──>│  4. GENERATE │
+ │  NewsAPI    │   │  TF-IDF +     │   │  Build a      │   │  Gemini      │
+ │  → articles │   │  cosine sim.  │   │  cited prompt │   │  streams the │
+ │             │   │  → top 6 docs │   │               │   │  answer      │
+ └─────────────┘   └───────────────┘   └───────────────┘   └──────────────┘
+```
 
 ### Why should a beginner AI engineer care?
 
