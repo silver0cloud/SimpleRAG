@@ -23,15 +23,7 @@ If you've heard the term "RAG" thrown around and want to build one with your own
 
 A plain LLM answers purely from what it learned during training — frozen at some cutoff date, and only what happened to be in its training data. Ask a plain LLM *"what happened in AI news this week?"* and it will either say "I don't know, my knowledge has a cutoff" or — worse — confidently make something up (this is called **hallucination**).
 
-RAG fixes this by giving the model an "open book" for the specific question you're asking, right before it answers:
-
-| | Plain LLM generation | RAG |
-|---|---|---|
-| Knowledge source | Frozen training data only | Training data **+** documents you fetch live |
-| Up-to-date? | No — stuck at a training cutoff | Yes — as fresh as your data source |
-| Can cite sources? | No — it's guessing from memory | Yes — every claim can point to a document |
-| Can you fix wrong answers? | Retrain the whole model (expensive) | Fix your data/retrieval (cheap) |
-| Hallucination risk | Higher on niche/recent topics | Lower — answer is grounded in real text |
+RAG fixes this by giving the model an "open book" for the specific question you're asking, right before it answers.
 
 ```
 "What's changed in AI regulation in the last two weeks?"
@@ -58,6 +50,14 @@ Because **RAG is the pattern behind almost every real-world LLM product you've u
 There's technically no separate step for "index" but you'll see it in this codebase — it's the prep work that makes retrieval possible: turning raw text into a searchable numeric form ahead of time.
 
 > **A beginner's mental model:** RAG is an open-book exam. Plain LLM generation is a closed-book exam. The model isn't smarter in RAG — it just gets to read the textbook page relevant to the question before writing its answer.
+
+| | Plain LLM generation | RAG |
+|---|---|---|
+| Knowledge source | Frozen training data only | Training data **+** documents you fetch live |
+| Up-to-date? | No — stuck at a training cutoff | Yes — as fresh as your data source |
+| Can cite sources? | No — it's guessing from memory | Yes — every claim can point to a document |
+| Can you fix wrong answers? | Retrain the whole model (expensive) | Fix your data/retrieval (cheap) |
+| Hallucination risk | Higher on niche/recent topics | Lower — answer is grounded in real text |
 
 ---
 
