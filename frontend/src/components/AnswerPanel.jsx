@@ -1,12 +1,12 @@
-// ─────────────────────────────────────────────────────────────────────────
-// AnswerPanel.jsx — renders the generated answer as it streams in, plus
-// the sources it was grounded on.
+// ————— AnswerPanel.jsx ———————————————————————————————————————————————————
+// Renders the generated answer as it streams in. 
+// Plus the sources it was grounded on.
 //
 // The signature UI idea here: the prompt in main.py instructs Gemini to
 // cite articles as [1], [2]... We turn those bracketed numbers into little
-// "wire tags" that visually match the numbered source list below — so you
-// can SEE that every claim traces back to a specific fetched article. This
-// is the whole point of RAG over plain generation: answers are auditable.
+// "wire tags" that visually match the numbered source list below — 
+// so you can SEE that every claim traces back to a specific fetched article. 
+// This is the whole point of RAG over plain generation: answers are auditable.
 // ─────────────────────────────────────────────────────────────────────────
 export default function AnswerPanel({ answer, sources, asking, error }) {
   if (!answer && !asking && !error) return null;
