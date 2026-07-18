@@ -7,8 +7,8 @@
 // ─────────────────────────────────────────────────────────────────────────────────
 const EXAMPLES = [
   "What's changed in the last two weeks?",
-  "Summarize the overall sentiment",
-  "What are the key disagreements between sources?",
+  "Summarize the overall breakthroughs in recent days.",
+  "What are the key disagreements between opinions on this topic?",
 ];
 
 export default function QuestionPanel({ question, setQuestion, onAsk, asking, disabled }) {
