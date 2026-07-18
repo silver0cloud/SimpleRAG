@@ -1,13 +1,11 @@
-// ─────────────────────────────────────────────────────────────────────────
-// FetchPanel.jsx — shows the raw material RAG will retrieve from.
+// ────── FetchPanel.jsx ────────────────────────────────────────────────────
+// Shows the raw material RAG will retrieve from.
 //
-// This is the "corpus" step made visible. Every chip here is one document
-// in our tiny in-memory index. We split them into "recent" (last 14 days)
-// vs "older" (15–28 days ago) because the backend fetches both windows on
-// purpose — it's a nice, concrete way to see retrieval pull DIFFERENT
-// articles depending on whether your question is about "now" or "trend
-// over time".
-// ─────────────────────────────────────────────────────────────────────────
+// This is the "corpus" step made visible. Every chip here is one document in our tiny in-memory index. 
+// We split them into "recent" (last 14 days) vs "older" (15–28 days ago) because 
+// the backend fetches both windows on purpose — it's a nice, concrete way to see retrieval 
+// pull DIFFERENT articles depending on whether your question is about "now" or "trend over time".
+// ──────────────────────────────────────────────────────────────────────────
 export default function FetchPanel({ articles, loading, error, topic }) {
   const recent = articles.filter((a) => a.era === "recent");
   const old = articles.filter((a) => a.era === "old");
